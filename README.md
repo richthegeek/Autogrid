@@ -1,1 +1,3 @@
-See index.html - download and try it for yourself, it'll take you two minutes.
+See http://richthegeek.github.com/Autogrid/ for example.
+
+License: GPLv3
