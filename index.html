@@ -1,0 +1,160 @@
+<html>
+<head>
+	<title>Autogrid</title>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	<script type="text/javascript" src="autogrid.js"></script>
+	<script type="text/javascript">
+	$(function() {
+
+		$('.autogrid:not(.use-ratios)').autogrid({use_ratios: false})
+		$('.autogrid.use-ratios').autogrid({use_ratios: true})
+
+
+	})
+	</script>
+	<style type="text/css">
+		body {
+			margin: 0;
+			padding: 0;
+		}
+
+		.menu-wrap {
+			display: block;
+			background: #222;
+			border-bottom: 3px solid #3a88d8;
+			margin-bottom: 10px;
+		}
+			.menu {
+				width: 100%;
+				max-width: 940px;
+
+				margin: 0 auto;
+				overflow: auto;
+			}
+
+				.menu a {
+					float: left;
+					/*min-width: 90px;*/
+					max-width: 300px;
+
+					padding: 0 5px;
+					line-height: 45px;
+					text-align: center;
+					color: #fff;
+					text-decoration: none;
+					font-family: Lato;
+					font-weight: bold;
+				}
+					@media (max-width: 600px) {
+						.menu a {
+							font-size: 10pt;
+						}
+					}
+
+					.menu a + a {
+						border-left: 1px solid #444;
+					}
+					.menu a:hover {
+						background: #3a88d8;
+					}
+					.menu a:hover,
+					.menu a:hover + a {
+						border-color: #3a88d8;
+					}
+
+
+		.wrap {
+			width: 100%;
+			max-width: 940px;
+			min-width: 600px;
+			margin: 0 auto;
+		}
+
+			.wrap .thumb {
+				float: left;
+				min-width: 200px;
+				max-width: 940px;
+				padding: 5px;
+			}
+				.wrap .thumb img {
+					width: 100%;
+				}
+
+				.wrap .thumb span {
+					display: block;
+					line-height: 30px;
+					padding: 0px 10px;
+					background: rgba(0,0,0,0.5);
+					color: #fff;
+					font-family: Lato;
+					font-weight: bold;
+					font-size: 10pt;
+
+					position: relative;
+					top: -30px;
+					margin-bottom: -30px;
+				}
+
+	.wrap .clear-row {
+		margin: 5px 2% 5px 1%;
+		width: 97% !important;
+		border-bottom: 1px dotted #aaa;
+	}
+	</style>
+</head>
+<body>
+
+	<div class='menu-wrap'>
+		<div class='menu autogrid'>
+			<a href='#'>home</a>
+			<a href='#'>about us</a>
+			<a href='#'>our work</a>
+			<a href='#'>@</a>
+		</div>
+	</div>
+
+	<div class='wrap clearfix autogrid'>
+		<div class='thumb'>
+			<img src='http://30.media.tumblr.com/tumblr_lth2rh1H9q1qk3f8eo1_500.jpg'>
+			<span>this is a caption, ain't it cool?</span>
+		</div>
+		<div class='thumb'>
+			<img src='http://i.imgur.com/jmS2Q.jpg'>
+			<span>this is a caption, ain't it cool?</span>
+		</div>
+		<div class='thumb'>
+			<img src='http://i.imgur.com/KcQKt.jpg'>
+			<span>this is a caption, ain't it cool?</span>
+		</div>
+		<div class='thumb'>
+			<img src='http://farm4.static.flickr.com/3561/3400866701_9b639c1eb2_b.jpg'>
+			<span>this is a caption, ain't it cool?</span>
+		</div>
+		<div class='thumb'>
+			<img src='http://i.imgur.com/jmS2Q.jpg'>
+			<span>this is a caption, ain't it cool?</span>
+		</div>
+		<div class='thumb'>
+			<img src='http://i.imgur.com/jmS2Q.jpg'>
+			<span>this is a caption, ain't it cool?</span>
+		</div>
+		<div class='thumb'>
+			<img src='http://i.imgur.com/jmS2Q.jpg'>
+			<span>this is a caption, ain't it cool?</span>
+		</div>
+		<div class='thumb'>
+			<img src='http://i.imgur.com/jmS2Q.jpg'>
+			<span>this is a caption, ain't it cool?</span>
+		</div>
+		<div class='thumb'>
+			<img src='http://i.imgur.com/jmS2Q.jpg'>
+			<span>this is a caption, ain't it cool?</span>
+		</div>
+		<div class='thumb'>
+			<img src='http://i.imgur.com/jmS2Q.jpg'>
+			<span>this is a caption, ain't it cool?</span>
+		</div>
+	</div>
+
+</body>
+</html>
