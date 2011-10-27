@@ -10,12 +10,13 @@
 			var base = this
 			base.info = {}
 			base.defaults = {
-				'add_clear_row': true, // wether to append .clear-row divs between rows to help with clearing.
-				'add_final_clear_row' : true,
+				'add_row_wrapper': true, // wether to append .clear-row divs between rows to help with clearing.
 				'default_min' : 200,
 				'default_max' : 9999, // this allows elements to scale upwards infinitely, filling rows at will
 				'use_ratios' : true, // wether to scale in proportion to the min size of each element or distribute available width equally
-				'body_adjust_size' : 6 // a bugfix - not happy about this atm
+				'body_adjust_size' : 6, // a bugfix - not happy about this atm,
+				'sort_rows' : false,
+				'reverse' : false
 			}
 			base.options = $.extend({}, base.defaults, options)
 
@@ -60,19 +61,22 @@
 			// each row is passed to the "scale row" function when
 			// the row is filled.
 			base.update_grid = function() {
-				p_width = base.get_parent_width()
-				kids = base.info.children
+				var p_width = base.get_parent_width(),
+					kids = base.info.children,
+					row_width = 0,
+					row_kids = [],
+					rows = []
 
-				row_width = 0
-				row_kids = []
-
-				jQuery(base).find('.clear-row').remove()
-				jQuery(kids).each(function() {
+				$(base).find('.clear-row').each(base.unwrap_row)
+				$(kids).each(function() {
 					// if adding this element will cause the row to wrap
 					// then scale the old row and start a new one.
 					if (row_width + (this.min + this.extra) > p_width) {
-						base.scale_row(p_width, row_width, row_kids)
-						base.clear_row(row_kids, false)
+						if (row_kids.length) {
+							base.scale_row(p_width, row_width, row_kids)
+							base.wrap_row(row_kids)
+							rows.push(row_kids)
+						}
 						row_width = 0
 						row_kids = []
 					}
@@ -80,20 +84,35 @@
 					row_width += (this.min + this.extra)
 					row_kids.push(this)
 				})
-				base.scale_row(p_width, row_width, row_kids)
-				base.clear_row(row_kids, true)
+				if (row_kids.length) {
+					base.scale_row(p_width, row_width, row_kids)
+					base.wrap_row(row_kids)
+					rows.push(row_kids)
+				}
+
+				// are we reversing (flipping the stacking of heights)?
 			}
 
-			base.clear_row = function(row, is_final) {
-				if (base.options.add_clear_row && (!is_final || base.options.add_final_clear_row)) {
-					$('<div />').addClass('clear-row')
-						.css({
-							display: 'block',
-							width: '100%',
-							height: 0,
-							clear: 'both'
-						})
-						.insertAfter(row[row.length - 1].element)
+			base.unwrap_row = function() {
+				$(this).children(':not(.row-clear)').insertAfter(this)
+				$(this).remove()
+			}
+
+			base.wrap_row = function(row) {
+				if (base.options.add_row_wrapper) {
+					var wrap = $('<div />')
+					wrap.addClass('clear-row')
+					wrap.addClass('contains-' + row.length)
+					wrap.insertBefore(row[0].element)
+					for (var i in row) {
+						$(row[i].element).appendTo(wrap)
+					}
+					$('<div />').addClass('row-clear').css({
+						display: 'block',
+						width: '100%',
+						height: 0,
+						clear: 'both'
+					}).appendTo(wrap)
 				}
 			}
 
@@ -147,13 +166,34 @@
 					// the width is the minimum of:
 					//   - the min width + the scaled remainder
 					//   - the max width
-					kid_width = Math.min(Math.floor(row_kids[i].min + (plus * ratios[i])), row_kids[i].max)
-					total_added += (kid_width + row_kids[i].extra)
-					jQuery(row_kids[i].element).width(kid_width)
+					kid = row_kids[i]
+					kid.width = Math.min(Math.floor(kid.min + (plus * ratios[i])), kid.max)
+					total_added += (kid.width + kid.extra)
+					jQuery(kid.element).width(kid.width)
 				}
-				// adjust the large element's width a second time to take up the final few pixels
-				// make sure it doesn't span more than it's max-width
-				jQuery(row_kids[rmax_index].element).width(Math.min(row_kids[rmax_index].max, jQuery(row_kids[rmax_index].element).width() + p_width - total_added))
+
+				// sort kids by available width for optimal distributions
+				row_kids = row_kids.sort(function(a, b) {
+					return ((a.max - a.width) < (b.max - b.width))
+				})
+
+				// attempt to distribute all remaining space amongst children
+				// without preference for ratios or equality.
+				i = 0
+				difference = p_width - total_added
+				while (i < row_kids.length && difference > 0) {
+					kid = row_kids[i]
+
+					diff = Math.min(kid.max, difference)
+
+					kid.width += diff
+					difference -= diff
+
+					$(kid.element).width(kid.width)
+
+					i++
+				}
+
 			}
 
 			// update child widths. Do this once.
@@ -161,7 +201,7 @@
 
 			// bind "update_grid" on window resize
 			// trigger here as well but it will fail slightly
-			jQuery(window).resize(base.update_grid).resize()
+			jQuery(window).resize(base.update_grid)//.resize()
 		})
 	}
 
